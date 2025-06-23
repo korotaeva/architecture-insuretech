@@ -1,0 +1,86 @@
+# Schema for Client Info Service
+# Version: 1.0.0
+
+type Query {
+  """
+  Получить информацию о клиенте с возможностью выбора полей
+  """
+  client(
+    "Уникальный идентификатор клиента"
+    id: ID!
+
+    "Включить документы клиента (опционально)"
+    includeDocuments: Boolean = false
+
+    "Включить родственников клиента (опционально)"
+    includeRelatives: Boolean = false
+  ): Client
+}
+
+"""
+Основная информация о клиенте
+"""
+type Client {
+  "Уникальный идентификатор"
+  id: ID!
+
+  "Полное имя"
+  name: String!
+
+  "Возраст в годах"
+  age: Int!
+
+  "Список документов (требует явного запроса)"
+  documents: [Document!]! @include(if: $includeDocuments)
+
+  "Список родственников (требует явного запроса)"
+  relatives: [Relative!]! @include(if: $includeRelatives)
+}
+
+"""
+Документ клиента
+"""
+type Document {
+  "Уникальный идентификатор документа"
+  id: ID!
+
+  "Тип документа (паспорт, водительские права и т.д.)"
+  type: String!
+
+  "Номер документа"
+  number: String!
+
+  "Дата выдачи (формат YYYY-MM-DD)"
+  issueDate: String!
+
+  "Дата окончания действия (формат YYYY-MM-DD, опционально)"
+  expiryDate: String
+}
+
+"""
+Родственник клиента
+"""
+type Relative {
+  "Уникальный идентификатор родственника"
+  id: ID!
+
+  "Тип родственной связи"
+  relationType: String!
+
+  "Полное имя"
+  name: String!
+
+  "Возраст в годах (опционально)"
+  age: Int
+}
+
+# Параметры сортировки (можно расширить)
+enum SortDirection {
+  ASC
+  DESC
+}
+
+input DocumentFilter {
+  type: String
+  validOnly: Boolean = false
+}
